@@ -1,0 +1,7 @@
+这个脚本实现了对zabbix trapper功能的封装。
+
+使用场景：
+通常用来批量上报数据，即(key,val)对数较大。
+
+使用方法：
+在zabbix portal配置好item，item的type为zabbix trapper。
