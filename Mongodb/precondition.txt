@@ -1,0 +1,16 @@
+1）使用netstat来捕获mongodb启用的端口，但zabbix-agent运行在zabbix账号下，故须给zabbix账号授权运行netstat -nltp的权限。
+
+echo "zabbix ALL=(root) NOPASSWD:/bin/netstat" > /etc/sudoers.d/zabbix
+echo 'Defaults:zabbix   !requiretty'  >>  /etc/sudoers.d/zabbix
+chmod 600  /etc/sudoers.d/zabbix
+
+2）zabbix_agent.conf配置文件中需包含如下配置，注意脚本的位置
+## qiujingqin MongoDB  @20160215
+UserParameter=mongodb.discovery, python /usr/local/zabbix/lib/mdb_sstat.py --list
+UserParameter=mongodb.status[*],python /usr/local/zabbix/lib/mdb_sstat.py -p $1 -i $2
+
+3）如果连接MongoDB需要账号密码，则需要配置端口、账号、密码的对应关系，配置文件路径如下：
+/usr/local/public-ops/conf/.mongodb.passwd
+
+内容如下：
+27017 qiueer 42fas#qdd
