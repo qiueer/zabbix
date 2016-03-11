@@ -1988,7 +1988,7 @@ It requires user parameter mysql.status[*], which is defined in userparameter_my
     <triggers>
         <trigger>
             <expression>{MySQL-Slave_Only:custom.mysql.item[is_replication].last()}&lt;&gt;2 or {MySQL-Slave_Only:custom.mysql.item[is_replication].nodata(5m)}=1</expression>
-            <name>fangdd-db-is-replication-tg</name>
+            <name>db-is-replication-tg</name>
             <url/>
             <status>0</status>
             <priority>4</priority>
@@ -1998,7 +1998,7 @@ It requires user parameter mysql.status[*], which is defined in userparameter_my
         </trigger>
         <trigger>
             <expression>{MySQL-Slave_Only:custom.mysql.item[repl_delay_time].last()}&gt;600</expression>
-            <name>fangdd-db-repl-delay-time-tg</name>
+            <name>db-repl-delay-time-tg</name>
             <url/>
             <status>0</status>
             <priority>4</priority>
@@ -2008,7 +2008,7 @@ It requires user parameter mysql.status[*], which is defined in userparameter_my
         </trigger>
         <trigger>
             <expression>{MySQL-Thread:custom.mysql.item[running_count].last()}&gt;50</expression>
-            <name>fangdd-活跃链接数触发器</name>
+            <name>活跃链接数触发器</name>
             <url/>
             <status>0</status>
             <priority>4</priority>
@@ -2018,7 +2018,7 @@ It requires user parameter mysql.status[*], which is defined in userparameter_my
         </trigger>
         <trigger>
             <expression>{MySQL-Thread:custom.mysql.item[connected_count].max(3)}&gt;2000</expression>
-            <name>fangdd-链接数触发器</name>
+            <name>链接数触发器</name>
             <url/>
             <status>0</status>
             <priority>4</priority>
