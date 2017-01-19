@@ -1,0 +1,19 @@
+说明：
+## 使用如下的命令来获取jmxport
+ps -ef | grep tomcat | grep 'jmxremote.port='| grep -v grep | awk -F'jmxremote.port=' '{print $2}' | awk '{print $1}' 2>/dev/null
+
+使用前置条件：
+1）修改catalina.sh，开启remotejmx支持，在加入如下脚本（根据实际情况修改）。如果一台主机上部署了多个tomcat实例，为了便于辨认，jmxport的取值建议根据规则设定，例如在业务端口的基础上加上5000
+jmxport=13080
+ip=$(/sbin/ifconfig eth0 | grep 'inet addr' | awk '{print $2}' | awk -F':' '{print $2}' )
+CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.port=${jmxport} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=${ip} -Dcom.sun.management.jmxremote"
+
+2）部署脚本及依赖
+将jmx.py，cmdline-jmxclient-0.10.3.jar拷贝到/usr/local/zabbix/lib/jvm目录
+
+3）zabbix_agent.conf配置文件中需包含如下配置，注意脚本的位置
+UserParameter=jmx.discovery, python /usr/local/zabbix/lib/jvm/jmx.py --list
+UserParameter=jmx.item[*],python /usr/local/zabbix/lib/jvm/jmx.py -b $1 -k $2 -p $3
+
+4）注意
+/usr/local/zabbix/lib/jvm目录根据实际需要修改
