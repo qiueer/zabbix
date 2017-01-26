@@ -1,0 +1,74 @@
+背景：
+zabbix监控平台自带的JVM、Tomcat监控模板存在如下缺陷：
+1）每台主机需配置独立的JMX interface，如果运行java（或tomcat）实例的主机数量比较多，配置起来耗时耗力，略显傻比；
+2）因每台主机的监控项有唯一性限制，如果一台主机运行有多个java（或tomcat）实例，则需多配置相同的主机，响应配置多个JMX interface，纯手工活，这与运维自动化的理念相去甚远；
+3）tomcat的监控模板只监控业务端口为8080的tomcat实例，限制太死，不够灵活；
+4）需要另外安装、配置zabbix java gateway插件；
+
+解决方案：
+利用zabbix低级别自动发现功能（LLD），编写数据采集脚本，改造zabbix自带的模板，通过Discovery自动发现jmx端口，并自动增加监控。
+
+工具套件：
+cmdline-jmxclient-0.10.3.jar：基础工具，主要是用这东东来采集数据；
+Qiueer-Template JMX Generic.xml： JVM监控模板，主要监控JVM，监控JVM内存使用情况、GC情况等；
+Qiueer-Template JMX Tomcat With IO-NIO.xml： tomcat监控模板，监控IO模型为NIO的tomcat实例；
+Qiueer-Template JMX Tomcat With IO-BIO.xml： tomcat监控模板，监控IO模型为BIO的tomcat实例；
+Qiueer-Template JMX Tomcat With IO-APR.xml： tomcat监控模板，监控IO模型为APR的tomcat实例；
+jvm.py： JVM运行数据采集脚本
+tomcat.py： tomcat运行数据采集脚本
+
+使用方法：
+1）调整java进程启动参数
+I）如果仅监控非tomcat类型的java进程，需在启动参数中加入如下：
+ -Dcom.sun.management.jmxremote.port=${jmxport} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote
+ 其中，jmxport为jmx监控端口
+II）监控tomcat实例，修改catalina.sh，开启remotejmx支持，在加入如下脚本（根据实际情况修改jmxport/ip变量）：
+jmxport=13080
+ip=localhost
+CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.port=${jmxport} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=${ip} -Dcom.sun.management.jmxremote"
+PS：如果一台主机上部署了多个tomcat实例，为了便于辨认，jmxport的取值建议根据规则设定，例如在业务端口的基础上加上5000
+
+2）部署脚本及依赖
+将cmdline-jmxclient-0.10.3.jar、jvm.py、tomcat.py拷贝到/usr/local/zabbix/lib/jvm目录
+
+3）zabbix_agent.conf配置文件中需包含如下配置，注意脚本的位置：
+## JVM
+UserParameter=jmx.jvm.discovery, python /usr/local/zabbix/lib/jvm/jvm.py --list
+UserParameter=jmx.jvm.item[*],python /usr/local/zabbix/lib/jvm/jvm.py -b $1 -k $2 -p $3
+## Tomcat
+UserParameter=jmx.tomcat.discovery, python /usr/local/zabbix/lib/jvm/tomcat.py --list
+UserParameter=jmx.tomcat.item[*],python /usr/local/zabbix/lib/jvm/tomcat.py -b $1 -k $2 -p $3
+
+4）配置完成后，重启zabbix agent，例如：
+service  zabbix-agent restart
+
+5）配置模板，在zabbix前端进行：
+如果仅监控JVM，使用Qiueer-Template JMX Generic.xml模板即可；
+如果监控tomcat，使用Qiueer-Template JMX Generic.xml和Qiueer-Template JMX Tomcat With IO-NIO.xml、Qiueer-Template JMX Tomcat With IO-BIO.xml、Qiueer-Template JMX Tomcat With IO-APR.xml其中一个即可，使用哪一个tomcat监控模板，根据tomcat配置的IO类型决定；
+
+PS：
+3）、4）步骤中的路劲/usr/local/zabbix/lib/jvm根据实际情况修改
+
+使用示例
+1）获取jmxport列表
+$ python jvm.py --list
+{
+       "data":[
+              {
+                     "{#JVMPORT}":13080,
+                     "{#PID}":4199,
+                     "{#RUNUSER}":"qiueer"
+              }
+       ]
+}
+2）采集数据
+$ python jvm.py -b 'java.lang:type=Memory' -k 'HeapMemoryUsage.committed' -p 13080
+58195968
+3）tomcat数据获取，同理
+
+其他
+## JVM监控，使用解析如下的命令的输出来获取jmxport
+ps -ef | grep 'jmxremote.port=' | grep -v grep 2>/dev/null
+## TOMCAT监控，使用解析如下的命令的输出来获取jmxport
+ps -ef | grep tomcat | grep 'jmxremote.port=' | grep -v grep 2>/dev/null
+
