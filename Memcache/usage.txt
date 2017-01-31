@@ -1,0 +1,41 @@
+使用方法：
+1）使用netstat来捕获memcache启用的端口，但zabbix-agent运行在zabbix账号下，故须给zabbix账号授权运行netstat -nltp的权限，在root用户下执行如下命令：
+echo "zabbix ALL=(root) NOPASSWD:/bin/netstat" > /etc/sudoers.d/zabbix
+echo 'Defaults:zabbix   !requiretty'  >>  /etc/sudoers.d/zabbix
+chmod 600  /etc/sudoers.d/zabbix
+
+2）将qiueer目录、memcache.py复制到 /usr/local/zabbix/lib/memcache目录，供参考：
+mkdir -p /usr/local/zabbix/lib/memcache
+cp qiueer memcache.py  /usr/local/zabbix/lib/memcache -R
+
+3）zabbix_agent.conf配置文件中需包含如下配置，注意脚本的位置
+## qiueer memcached @20160215
+UserParameter=memcached.discovery, python /usr/local/zabbix/lib/memcache/memcache.py --list
+UserParameter=memcached.status[*],python /usr/local/zabbix/lib/memcache/memcache.py -i $1  -p $2
+
+4）配置完成后，重启zabbix agent，例如：
+service  zabbix-agent restart
+
+5）在zabbix前端导入模板：
+Qiueer-Template Business-Memcached-Discovery.xml
+
+PS：
+2）、3）步骤中的路劲/usr/local/zabbix/lib/memcache/根据实际情况修改
+
+使用示例
+1）获取memcache端口列表
+$ python memcache.py  -l
+{
+       "data":[
+              {
+                     "{#MEMCACHED_PORT}":11211
+              }
+       ]
+}
+2）采集数据
+$ python memcache.py  -p 11211 -i bytes_written
+7244
+
+其他
+## 使用如下命令解析其输出来获取memcached的端口
+sudo netstat  -nlpt | grep 'memcached' | awk '{print $4}'|awk -F: '{print $2}'
