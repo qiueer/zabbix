@@ -20,7 +20,7 @@ service  zabbix-agent restart
 Qiueer-Template Business-Memcached-Discovery.xml
 
 PS：
-2）、3）步骤中的路劲/usr/local/zabbix/lib/memcache/根据实际情况修改
+2）、3）步骤中的路径/usr/local/zabbix/lib/memcache/根据实际情况调整
 
 使用示例
 1）获取memcache端口列表
