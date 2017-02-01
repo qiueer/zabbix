@@ -1,0 +1,46 @@
+使用方法：
+1）使用netstat来捕获redis-server启用的端口，但zabbix-agent运行在zabbix账号下，故须给zabbix账号授权运行netstat -nltp的权限，在root用户下执行如下命令：
+echo "zabbix ALL=(root) NOPASSWD:/bin/netstat" > /etc/sudoers.d/zabbix
+echo 'Defaults:zabbix   !requiretty'  >>  /etc/sudoers.d/zabbix
+chmod 600  /etc/sudoers.d/zabbix
+
+2）将qiueer目录、redis.py复制到 /usr/local/zabbix/lib/redis目录，供参考：
+mkdir -p /usr/local/zabbix/lib/redis
+cp qiueer redis.py  /usr/local/zabbix/lib/redis -R
+
+3）zabbix_agent.conf配置文件中需包含如下配置，注意脚本的位置：
+## qiueer redis-stat for discovery
+UserParameter=custom.redis.discovery, python /usr/local/zabbix/lib/redis/redis.py --list
+UserParameter=custom.redis.item[*],python /usr/local/zabbix/lib/redis/redis.py -p $1  -k $2
+
+4）配置完成后，重启zabbix agent，例如：
+service  zabbix-agent restart
+
+5）在zabbix前端导入模板：
+Qiueer-Template Business-Redis-Discovery.xml
+
+6）如果连接Redis需要账号密码，则需要配置端口、密码的对应关系，配置文件路径如下：
+/usr/local/public-ops/conf/.redis.passwd （注意需给zabbix用户赋予只读权限）
+内容类似如下，格式是： 端口  密码
+6379 42s#qdd
+
+PS：
+2）、3）步骤中的路径/usr/local/zabbix/lib/redis/根据实际情况修改
+
+使用示例
+1）获取redis端口列表：
+$ python redis.py -l
+{
+       "data":[
+              {
+                     "{#REDIS_PORT}":6379
+              }
+       ]
+}
+2）采集数据
+$ python redis.py -p 6379 -k used_memory_rss
+9035776
+
+其他
+## 使用如下命令解析其输出来获取memcached的端口
+sudo netstat  -nlpt | grep 'redis-server' | awk '{print $4}'|awk -F: '{print $2}'
