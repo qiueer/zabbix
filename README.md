@@ -23,10 +23,3 @@ zabbix自带的tomcat监控，存在如下不足：
 1）每台主机的监控item具有唯一性，如果一台主机有多个tomcat实例，则需要配置多个host；
 2）需要安装、配置zabbix_java_gateway；
 ```
-
-
-## 交流路径
-```
-Email: qiujqin@163.com
-QQ: 86877295
-```
