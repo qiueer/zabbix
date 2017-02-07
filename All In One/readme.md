@@ -1,12 +1,12 @@
-## All目录结构及说明：
+## All In One目录结构及说明：
 ```  
-├── confs                                放置所有zabbix key的配置  
+├── confs                       放置所有zabbix key的配置  
 ├── install_zabbix_extend.sh    安装脚本  
-├── readme.txt                        本文件  
-├── readme.md                       本文件(md)  
-├── src                                    源码文件  
-├── effects                              运行效果图    
-└── templates                         所有相关的zabbix模板  
+├── readme.txt                  本文件  
+├── readme.md                   本文件(md)  
+├── src                         源码文件  
+├── effects                     运行效果图    
+└── templates                   所有相关的zabbix模板  
 ```
 
 ## 使用说明：
