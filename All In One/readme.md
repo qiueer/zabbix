@@ -11,8 +11,11 @@
 
 ## 使用说明：
 ```  
-《一》在root用户下执行zabbix_extend_init.sh脚本，脚本第一个参数为配置文件存放目录，第二个参数为源码脚本存放路径。  
-例如执行如下命令：  
+《一》确定zabbix agent扩展功能需要包括的配置文件路径，例如/usr/local/zabbix_agent_extend/conf  
+修改zabbix agent的主配置文件zabbix_agentd.conf，加入如下内容：  
+Include=/usr/local/zabbix_agent_extend/conf/*.conf  
+《二》在root用户下执行zabbix_extend_init.sh脚本，脚本第一个参数为配置文件存放目录，第二个参数为源码脚本存放路径。  
+例如执行如下命令，其中/usr/local/zabbix_agent_extend/conf是步骤《一》中确定的文件路径：  
 bash zabbix_extend_init.sh /usr/local/zabbix_agent_extend/conf /usr/local/zabbix_agent_extend/scripts  
 其作用是：  
 1）将confs目录下的文件拷贝到/usr/local/zabbix_agent_extend/conf目录  
@@ -20,9 +23,9 @@ bash zabbix_extend_init.sh /usr/local/zabbix_agent_extend/conf /usr/local/zabbix
 注：  
 1）步骤1）中拷贝之前脚本会对这些配置文件先进行处理；  
 2）脚本执行到最后会尝试执行"/etc/init.d/zabbix-agent restart"命令重启zabbix agent，如果执行失败，请根据agent安装的实际情况进行重启，使配置生效  
-《二》将templates目录下的模板文件导入到zabbix系统；  
-《三》将主机link到相关的模板；  
-《四》大功告成；  
+《三》将templates目录下的模板文件导入到zabbix系统；  
+《四》将主机link到相关的模板；  
+《五》大功告成；  
 ```
 
 ## 注意事项：
