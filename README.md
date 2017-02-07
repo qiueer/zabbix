@@ -23,6 +23,10 @@ zabbix自带的tomcat监控，存在如下不足：
 ```
 
 ## 效果
+![image](https://github.com/qiueer/zabbix/raw/master/All%20In%20One/effects/p1.png)   
+![image](https://github.com/qiueer/zabbix/raw/master/All%20In%20One/effects/p2.png)   
+![image](https://github.com/qiueer/zabbix/raw/master/All%20In%20One/effects/p3.png)   
+![image](https://github.com/qiueer/zabbix/raw/master/All%20In%20One/effects/p4.png)   
 ```
 ![image](https://github.com/qiueer/zabbix/raw/master/All%20In%20One/effects/p1.png)  
 ![image](https://github.com/qiueer/zabbix/raw/master/All%20In%20One/effects/p2.png)  
