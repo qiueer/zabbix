@@ -13,8 +13,8 @@ fi
 
 CONF_DIRNAME=confs
 SCRIPT_DIRNAME=src
-CONF_DIR=${CURDIR}/${CONF_DIRNAME}
-SCRIPT_DIR=${CURDIR}/${SCRIPT_DIRNAME}
+CONF_DIR="${CURDIR}/${CONF_DIRNAME}"
+SCRIPT_DIR="${CURDIR}/${SCRIPT_DIRNAME}"
 
 TMP_BACKUP_DIR=/tmp/zabbix_extend
 
@@ -39,8 +39,8 @@ echo "[INFO] SWAP"
 SWAP_DIR=/tmp/zabbix_extend_swap
 mkdir -p ${SWAP_DIR}
 rm -frv ${SWAP_DIR}/*
-cp -Rv ${CONF_DIR} ${SWAP_DIR}/
-cp -Rv ${SCRIPT_DIR} ${SWAP_DIR}/
+cp -Rv "${CONF_DIR}" ${SWAP_DIR}/
+cp -Rv "${SCRIPT_DIR}" ${SWAP_DIR}/
 FULL_DEST_SCRIPT_DIR=${DEST_SCRIPT_DIR}
 sed -i "s#\$SCRIPPATH#${FULL_DEST_SCRIPT_DIR}#g" ${SWAP_DIR}/${CONF_DIRNAME}/*.conf
 
