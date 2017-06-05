@@ -72,7 +72,8 @@ class Mysql(object):
             content = dict()
             for line in output_list:
                 line = str(line).strip().replace(" ", "").strip("|").lower()
-                line_ary = re.split(r"[\s]+", line)
+                #line_ary = re.split(r"[\s]+", line)
+                line_ary = re.split(r"[\s|\||:|;|,]+", line)
                 if len(line_ary) < 2:continue
                 if content.has_key(line_ary[0]):
                     pass
@@ -86,7 +87,8 @@ class Mysql(object):
     def get_value(self, key, hostname=None, username=None, password=None, port=None):
         force = self._force
         key = str(key).lower()
-        cmdstr = "SHOW VARIABLES; SHOW GLOBAL STATUS; SHOW SLAVE STATUS"
+        #cmdstr = "SHOW VARIABLES; SHOW GLOBAL STATUS; SHOW SLAVE STATUS"
+        cmdstr = "SHOW VARIABLES; SHOW GLOBAL STATUS; SHOW SLAVE STATUS\G"
         if force == True:
             content = self.get_mysql_cmd_output(cmdstr, hostname=hostname, username=username, password=password, port=port)
             self._file_cache.save_to_cache_file(content)
