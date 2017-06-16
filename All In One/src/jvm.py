@@ -25,7 +25,7 @@ def get_realpath():
 def get_binname():
     return os.path.split(os.path.realpath(__file__))[1]
 
-class JTomcat(object):
+class JMX(object):
     def __init__(self, logpath, debug=False):
         self._logpath = logpath
         self._debug = debug
@@ -82,7 +82,7 @@ class JTomcat(object):
         
         return json.dumps({'data': data}, sort_keys=True, indent=7, separators=(",", ":"))
             
-    def get_item(self, beanstr, key, port):
+    def get_item(self, beanstr, key, port, iphost='localhost', auth='-'):
         """
         java -jar cmdline-jmxclient-0.10.3.jar - localhost:12345 java.lang:type=Memory NonHeapMemoryUsage
         参数：
@@ -93,7 +93,7 @@ class JTomcat(object):
             pos = str(key).rfind(".")
             pre_key = key[0:pos]
             sub_key = key[pos + 1:]
-        cmdstr = "%s -jar %s - localhost:%s '%s' '%s'" % (self._java_path, self._cmdclient_jar, port, beanstr, pre_key)
+        cmdstr = "%s -jar %s %s %s:%s '%s' '%s'" % (self._java_path, self._cmdclient_jar, auth, iphost, port, beanstr, pre_key)
         
         c2 = cmds(cmdstr, timeout=3)
         stdo = c2.stdo()
@@ -141,12 +141,12 @@ class JTomcat(object):
 
 def main():
     try:
-        usage = "usage: %prog [options]\ngGet Tomcat Stat"
+        usage = "usage: %prog [options]\nGet Java App Info By JMX Protocal"
         parser = OptionParser(usage)
         
         parser.add_option("-l", "--list",
                           action="store_true", dest="is_list", default=False,
-                          help="if list all port")
+                          help="list all localhost jmx_port")
         
         parser.add_option("-b",
                           "--beanstr",
@@ -163,6 +163,14 @@ def main():
                           type="string",
                           default='NonHeapMemoryUsage.max',
                           help="such as: NonHeapMemoryUsage")
+        
+        parser.add_option("-i",
+                          "--iphost",
+                          action="store",
+                          dest="iphost",
+                          type="string",
+                          default="localhost",
+                          help="iphost")
 
         parser.add_option("-p",
                           "--port",
@@ -170,7 +178,15 @@ def main():
                           dest="port",
                           type="int",
                           default=None,
-                          help="the port for tomcat")
+                          help="jmx port")
+        
+        parser.add_option("-a",
+                          "--auth",
+                          action="store",
+                          dest="auth",
+                          type="string",
+                          default='-',
+                          help="auth info, username:passowrd")
         
         parser.add_option("-d", "--debug",
                           action="store_true", dest="debug", default=False,
@@ -182,19 +198,24 @@ def main():
             return
         
         logpath = "/tmp/zabbix_jvm_info.log"
-        zbx_ex_obj = JTomcat(logpath, debug=options.debug)
+        zbx_ex_obj = JMX(logpath, debug=options.debug)
         if options.is_list == True:
             print zbx_ex_obj.get_port_list()
             return
 
+        iphost = options.iphost
+        port = options.port
         beanstr = options.beanstr
         key = options.key
-        port = options.port
+        auth = options.auth
+        
         if beanstr and key and port:
-            res = zbx_ex_obj.get_item(beanstr, key, port)
+            res = zbx_ex_obj.get_item(beanstr, key, port, iphost=iphost, auth=auth)
             # # if have value
             if res:
                 print res
+        else:
+            parser.print_help()
 
     except Exception as expt:
         import traceback
