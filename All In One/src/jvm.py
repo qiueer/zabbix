@@ -33,7 +33,7 @@ class JMX(object):
         self._cmdclient_jar = get_realpath() + "/" + "cmdline-jmxclient-0.10.3.jar"
         self._logger = slog(self._logpath, debug=debug, size=5, count=5)
 
-    def get_port_list(self):
+    def _get_jmx_port_list(self):
         cmdstr = "ps -ef | grep 'jmxremote.port='| grep -v grep 2>/dev/null"
         plst = []
         
@@ -64,14 +64,21 @@ class JMX(object):
             ln_ary = re.split("[\s]+", line)
             runuser=ln_ary[0]
             pid = ln_ary[1]
+            gc = ""
             jmxport = None
+            pattern=r'\-XX\:\+Use(\w+)GC'
             for field in ln_ary:
                 if "jmxremote.port=" in field:
                     jmxport = str(field).split("jmxremote.port=")[1]
+                    
+                m = re.match(pattern, field)
+                if m:
+                    gc = m.group(1)
 
             confitem = {
                 "{#PID}": int(pid),
                 "{#RUNUSER}": runuser,
+                "{#GC}": gc,
             }
             
             if jmxport:
@@ -79,8 +86,20 @@ class JMX(object):
             
             if confitem:
                 data.append(confitem)
+        return data
+
+    def get_port_list(self, GC=None):
+        data = self._get_jmx_port_list()
+        ## all jmx port
+        if GC == None:
+            return json.dumps({'data': data}, sort_keys=True, indent=7, separators=(",", ":"))
         
-        return json.dumps({'data': data}, sort_keys=True, indent=7, separators=(",", ":"))
+        ## jmx port for GC
+        gc_data = list()
+        for item in data:
+            if item["{#GC}"] == GC:
+                gc_data.append(item)
+        return json.dumps({'data': gc_data}, sort_keys=True, indent=7, separators=(",", ":"))
             
     def get_item(self, beanstr, key, port, iphost='localhost', auth='-'):
         """
@@ -148,6 +167,14 @@ def main():
                           action="store_true", dest="is_list", default=False,
                           help="list all localhost jmx_port")
         
+        parser.add_option("-g",
+                          "--gc",
+                          action="store",
+                          dest="gc",
+                          type="string",
+                          default=None,
+                          help="such as: G1/ConcMarkSweep/Parallel/Serial")
+        
         parser.add_option("-b",
                           "--beanstr",
                           action="store",
@@ -200,7 +227,9 @@ def main():
         logpath = "/tmp/zabbix_jvm_info.log"
         zbx_ex_obj = JMX(logpath, debug=options.debug)
         if options.is_list == True:
-            print zbx_ex_obj.get_port_list()
+            gc = options.gc
+            if gc in ["","None","Null"]:gc = None
+            print zbx_ex_obj.get_port_list(GC=gc)
             return
 
         iphost = options.iphost
