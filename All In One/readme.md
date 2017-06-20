@@ -28,6 +28,23 @@ bash zabbix_extend_init.sh /usr/local/zabbix_agent_extend/conf /usr/local/zabbix
 《五》大功告成；  
 ```
 
+## 更新说明：
+```
+=========  
+20170618  
+=========  
+关于JVM监控，前一个版本，对适用于JVM大部分的GC算法，都集中在同一个模板中，这样会导致有些key不支持， 
+因为一个JVM实例同时只能支持一个GC算法，而一个GC算法通常有两个垃圾收集器，而不同垃圾收集器对内存管理方式又各不相同。  
+此次更新，主要解决上述问题，同时增加了对G1 GC算法的支持，另外同步调整了代码，为新的可能出现的GC算法预留可扩展性。  
+具体来说，JVM监控，使用模板文件“Qiueer-Template JVM.xml”中“Qiueer-Template JVM”模块即可,此模板包含了以下五个子模板：  
+Qiueer-Template JVM Generic Basic    
+Qiueer-Template JVM Generic With GC Is G1  
+Qiueer-Template JVM Generic With GC Is ConcMarkSweep  
+Qiueer-Template JVM Generic With GC Is Parallel  
+Qiueer-Template JVM Generic With GC Is Serial  
+
+```
+
 ## 注意事项：
 ```  
 1）jvm监控   
