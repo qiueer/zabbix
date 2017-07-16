@@ -42,7 +42,11 @@ Qiueer-Template JVM Generic With GC Is G1
 Qiueer-Template JVM Generic With GC Is ConcMarkSweep  
 Qiueer-Template JVM Generic With GC Is Parallel  
 Qiueer-Template JVM Generic With GC Is Serial  
-
+  
+=========  
+20170716   
+=========  
+增加对nginx的监控，使用方法见nginx.conf或python nginx.py -h或直接阅读代码，偷懒:) 
 ```
 
 ## 注意事项：
