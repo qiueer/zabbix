@@ -112,6 +112,11 @@ class JMX(object):
             pos = str(key).rfind(".")
             pre_key = key[0:pos]
             sub_key = key[pos + 1:]
+        
+        if self._java_path == None:
+            print "can not find java command, exit."
+            return None
+        
         cmdstr = "%s -jar %s %s %s:%s '%s' '%s'" % (self._java_path, self._cmdclient_jar, auth, iphost, port, beanstr, pre_key)
         
         c2 = cmds(cmdstr, timeout=3)
