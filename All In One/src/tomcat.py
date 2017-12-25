@@ -31,7 +31,7 @@ class TCSerHandler(xml.sax.ContentHandler):
     
     def startElement(self, tag, attributes):
         if tag == "Connector":
-            protocal = attributes["protocol"]
+            #protocal = attributes["protocol"]
             confitem = dict(attributes)
             self._connectors.append(confitem)
             
