@@ -11,6 +11,7 @@ import platform
 
 import os
 import xml.sax
+import getpass
 
 from qiueer.python.slog import slog
 from qiueer.python.cmds import cmds
@@ -244,7 +245,7 @@ def main():
             parser.print_help()
             return
         
-        logpath = "/tmp/zabbix_tomcat_info.log"
+        logpath = "/tmp/zabbix_tomcat_info_by_%s.log" % (getpass.getuser())
 
         zbx_ex_obj = JTomcat(logpath, debug=options.debug)
         if options.is_list == True:
