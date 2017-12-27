@@ -74,12 +74,12 @@ class JMX(object):
                     
                 m = re.match(pattern, field)
                 if m:
-                    gc = m.group(1) or "Parallel"
+                    gc = m.group(1)
 
             confitem = {
                 "{#PID}": int(pid),
                 "{#RUNUSER}": runuser,
-                "{#GC}": gc,
+                "{#GC}": gc or "Parallel",
             }
             
             if jmxport:
