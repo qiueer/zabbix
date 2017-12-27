@@ -11,6 +11,7 @@ import platform
 
 import os
 import json
+import getpass
 
 from qiueer.python.slog import slog
 from qiueer.python.cmds import cmds
@@ -229,7 +230,7 @@ def main():
             parser.print_help()
             return
         
-        logpath = "/tmp/zabbix_jvm_info.log"
+        logpath = "/tmp/zabbix_jvm_info_by_%s.log" % (getpass.getuser())
         zbx_ex_obj = JMX(logpath, debug=options.debug)
         if options.is_list == True:
             gc = options.gc
