@@ -73,7 +73,7 @@ class JMX(object):
                     
                 m = re.match(pattern, field)
                 if m:
-                    gc = m.group(1)
+                    gc = m.group(1) or "Parallel"
 
             confitem = {
                 "{#PID}": int(pid),
