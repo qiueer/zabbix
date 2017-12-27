@@ -111,7 +111,7 @@ class JTomcat(object):
                    handler = TCSerHandler()
                    parser.setContentHandler( handler )
                    parser.parse(server_xml)
-                   biz_port = handler.get_biz_port()
+                   biz_port = handler.get_biz_port() or "NotFound"
                    if biz_port:
                        confitem["{#BIZPORT}"] = biz_port
                 
