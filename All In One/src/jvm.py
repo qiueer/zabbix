@@ -65,7 +65,7 @@ class JMX(object):
             ln_ary = re.split("[\s]+", line)
             runuser=ln_ary[0]
             pid = ln_ary[1]
-            gc = ""
+            gcs = []
             jmxport = None
             pattern=r'\-XX\:\+Use(\w+)GC'
             for field in ln_ary:
@@ -74,19 +74,25 @@ class JMX(object):
                     
                 m = re.match(pattern, field)
                 if m:
-                    gc = m.group(1)
+                    gcs.append(m.group(1))
 
-            confitem = {
-                "{#PID}": int(pid),
-                "{#RUNUSER}": runuser,
-                "{#GC}": gc or "Parallel",
-            }
-            
-            if jmxport:
-                confitem["{#JVMPORT}"] = int(jmxport)
-            
-            if confitem:
+            if not gcs:
+				confitem = {
+					"{#PID}": int(pid),
+					"{#RUNUSER}": runuser,
+				}
+				if jmxport:confitem["{#JVMPORT}"] = int(jmxport)
+                confitem["{#GC}"] = "Parallel"
                 data.append(confitem)
+            else:
+                for gc in gcs:
+					confitem = {
+						"{#PID}": int(pid),
+						"{#RUNUSER}": runuser,
+					}
+					if jmxport:confitem["{#JVMPORT}"] = int(jmxport)
+                    confitem["{#GC}"] = gc or "Parallel"
+                    data.append(confitem)
         return data
 
     def get_port_list(self, GC=None):
