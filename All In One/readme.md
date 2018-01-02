@@ -47,11 +47,17 @@ Qiueer-Template JVM Generic With GC Is Serial
 20170716   
 =========  
 增加对nginx的监控，使用方法见nginx.conf或python nginx.py -h或直接阅读代码，偷懒:) 
+
+========
+20180102
+======== 
+更新代码，解决由root用户手动执行脚本后导致日志文件、缓存文件的权限问题
 ```
 
 ## 注意事项：
-```  
-1）jvm监控   
+```  
+以下的日志路径、缓存文件路径有变，变更后的目录不变，文件名类似。
+1）jvm监控   
 日志存储位置：/tmp/zabbix_jvm_info.log   
 2）tomcat监控   
 日志存储位置：/tmp/zabbix_tomcat_info.log   
