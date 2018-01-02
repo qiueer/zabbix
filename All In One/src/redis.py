@@ -2,12 +2,14 @@
 '''
 qiueer@2015-11-23
 update: 20170131
+update: 20180102
 redis性能收集
 '''
 import sys
 import os
 from optparse import OptionParser
 import re
+import getpass
 
 from qiueer.python.slog import slog
 from qiueer.python.cmds import cmds
@@ -21,7 +23,7 @@ class Redis(object):
         self._port = port if port else 6379
         self._debug = debug
         self._force = force
-        self._file_cache_path = "/tmp/.zabbix_redis_%s.txt" % (port)
+        self._file_cache_path = "/tmp/.zabbix_redis_%s_by_%s.txt" % (port, getpass.getuser())
         self._file_cache = filecache(self._file_cache_path)
         self._logger = slog(self._logpath, debug=debug, size=5, count=2)
 
