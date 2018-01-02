@@ -13,6 +13,7 @@ import platform
 import telnetlib
 import json
 import time
+import getpass
 
 from qiueer.python.slog import slog
 from qiueer.python.cmds import cmds
@@ -23,10 +24,11 @@ class MCache(object):
         self._iphost = iphost
         self._port = port
         self._force = force
-        self._logpath = "/tmp/zabbix_memcached.log"
-        self._cache_file = "/tmp/zabbix_memcached_cache_%s.txt" %(port)
+        curuser = getpass.getuser()
+        self._logpath = "/tmp/zabbix_memcached_by_%s.log" % (curuser)
+        self._cache_file = "/tmp/zabbix_memcached_cache_%s_by_%s.txt" % (port,curuser)
         if not port:
-            self._cache_file = "/tmp/zabbix_memcached_cache.txt"
+            self._cache_file = "/tmp/zabbix_memcached_cache_by_%s.txt" % (curuser)
         self._logger = slog(self._logpath, debug=debug, size=5, count=2)
         
     def get_logger(self):
