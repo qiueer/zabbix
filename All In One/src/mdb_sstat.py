@@ -15,6 +15,7 @@ import platform
 import json
 import pprint
 import types
+import getpass
 
 from qiueer.python.slog import slog
 from qiueer.python.cmds import cmds
@@ -45,10 +46,11 @@ class MGdb(object):
         self._password = password
         self._force = force
         
-        self._logpath = "/tmp/zabbix_mongodb.log"
-        self._cache_file_path = "/tmp/.zabbix_mongodb_cache_%s.txt" %(port)
+        curuser = getpass.getuser()
+        self._logpath = "/tmp/zabbix_mongodb_by_%s.log" % (curuser)
+        self._cache_file_path = "/tmp/.zabbix_mongodb_cache_%s_by_%s.txt" % (port,curuser)
         if not port:
-            self._cache_file_path = "/tmp/.zabbix_mongodb_cache.txt"
+            self._cache_file_path = "/tmp/.zabbix_mongodb_cache_by_%s.txt" % (curuser)
     
         self._file_cache = filecache(self._cache_file_path)
         self._logger = slog(self._logpath, debug=debug, size=5, count=2)
