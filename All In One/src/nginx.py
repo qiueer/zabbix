@@ -8,6 +8,7 @@ import re
 import os
 import socket
 import urllib
+import getpass
 
 from qiueer.python.cmds import cmds
 from qiueer.python.slog import slog
@@ -22,8 +23,9 @@ class NginxPerf(object):
         self._iphost = iphost
         self._port = port
         self._force = force
-        self._logpath = "/tmp/nginx_perf.log"
-        self._file_cache_path = "/tmp/.nginx_perf_cache_%s.txt" % (port)
+        curuser = getpass.getuser()
+        self._logpath = "/tmp/nginx_perf_by_%s.log" % (curuser)
+        self._file_cache_path = "/tmp/.nginx_perf_cache_%s_by_%s.txt" % (port, curuser)
         self._file_cache = filecache(self._file_cache_path)
         self._logger = slog(self._logpath, debug=debug, size=5, count=5)
         
