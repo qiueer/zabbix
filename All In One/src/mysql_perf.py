@@ -8,6 +8,7 @@ import sys
 import os
 from optparse import OptionParser
 import re
+import getpass
 
 from qiueer.python.slog import slog
 from qiueer.python.cmds import cmds
@@ -22,8 +23,9 @@ class Mysql(object):
         self._password = password
         self._port = port
         self._force = force
-        self._logpath = "/tmp/zabbix_mysql_perf.log"
-        self._file_cache_path = "/tmp/.zabbix_mysql_status_%s.txt" % (port)
+        curuser = getpass.getuser()
+        self._logpath = "/tmp/zabbix_mysql_perf_by_%s.log" % (curuser)
+        self._file_cache_path = "/tmp/.zabbix_mysql_status_%s_by_%s.txt" % (port, curuser)
         self._file_cache = filecache(self._file_cache_path)
         self._logger = slog(self._logpath, debug=debug, size=5, count=5)
 
