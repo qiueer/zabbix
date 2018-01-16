@@ -77,20 +77,20 @@ class JMX(object):
                     gcs.append(m.group(1))
 
             if not gcs:
-				confitem = {
-					"{#PID}": int(pid),
-					"{#RUNUSER}": runuser,
-				}
-				if jmxport:confitem["{#JVMPORT}"] = int(jmxport)
+                confitem = {
+                    "{#PID}": int(pid),
+                    "{#RUNUSER}": runuser,
+                }
+                if jmxport:confitem["{#JVMPORT}"] = int(jmxport)
                 confitem["{#GC}"] = "Parallel"
                 data.append(confitem)
             else:
                 for gc in gcs:
-					confitem = {
-						"{#PID}": int(pid),
-						"{#RUNUSER}": runuser,
-					}
-					if jmxport:confitem["{#JVMPORT}"] = int(jmxport)
+                    confitem = {
+                        "{#PID}": int(pid),
+                        "{#RUNUSER}": runuser,
+                    }
+                    if jmxport:confitem["{#JVMPORT}"] = int(jmxport)
                     confitem["{#GC}"] = gc or "Parallel"
                     data.append(confitem)
         return data
