@@ -43,7 +43,8 @@ class TCSerHandler(xml.sax.ContentHandler):
         cons = self.get_connectors()
         for item in cons:
             protocol = item.get("protocol", None)
-            if protocol == "HTTP/1.1":
+            ps = ["HTTP/1.1","org.apache.coyote.http11.Http11NioProtocol","org.apache.coyote.http11.Http11NioProtocol"]
+            if protocol in ps :
                 biz_port = item.get("port", None)
                 return int(biz_port)
         return None
