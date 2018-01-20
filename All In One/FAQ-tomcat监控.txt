@@ -1,0 +1,46 @@
+1）tomcat监控（tomcat.py），正常的输入如下：
+$ python tomcat.py -l
+{
+       "data":[
+              {
+                     "{#BIZPORT}":8080,
+                     "{#CTLN_HOME}":"/home/albert/apache-tomcat-8.5.11",
+                     "{#DIRNAME}":"apache-tomcat-8.5.11",
+                     "{#JVMPORT}":13080,
+                     "{#PID}":2446,
+                     "{#RUNUSER}":"albert"
+              }
+       ]
+}
+其中，
+# BIZPORT
+tomcat的业务端口
+# CTLN_HOME
+catalina home，BIZPORT业务端口是从这个目录下的conf/server.xml文件中获取。通常zabbix_agentd是运行在zabbix用户下，所以tomcat.py脚本是用zabbix运行，如果执行python tomcat.py -l，输出的BIZPORT为NotFound，则多是zabbix用户没有权限读取conf/server.xml文件的导致，解决方案是对于这个文件路径中，每一次目录都给予755的权限，server.xml文件给予zabbix用户只读权限；
+# DIRNAME
+tomcat目录名
+# JVMPORT
+JMX监控端口
+# PID
+进程ID
+# RUNUSER
+运行tomcat的用户
+
+3）java应用监控，需将jmx监控相关的选项放到前面，参考如下的restart脚本
+#!/bin/sh
+ps -ef | grep 'cms-api-app-test.jar' | grep -v grep | wc -l
+if [ $? -eq 0 ];then
+	ps -ef|grep 'cms-api-app-test.jar' | grep -v grep | awk '{print $2}' | xargs kill -9
+fi
+
+JMXPORT=13090
+HOSTNAME="192.168.253.130"
+JMXSTR="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${JMXPORT} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=${HOSTNAME}"
+
+cd /home
+## BAD, JMX端口不会打开
+#java -server -Xmx1G -Xms256m -XX:MaxNewSize=128m -jar cms-api-app-test.jar --spring.profiles.active=test --spring.jpa.generate-ddl=true ${JMXSTR} >/tmp/abcde.log 2>&1 &
+## OK
+java ${JMXSTR} -server -Xmx1G -Xms256m -XX:MaxNewSize=128m -jar cms-api-app-test.jar --spring.profiles.active=test --spring.jpa.generate-ddl=true >/tmp/abcde.log 2>&1 &
+sleep 1
+ps -ef|grep 'cms-api-app-test.jar' | grep -v grep
